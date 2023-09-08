@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RifBid</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins:400,500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Poppins", sans-serif;
+        background-color: #4caf50; /* Green background */
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 20px auto; /* Centered container */
+        padding: 20px;
+        background-color: #ffffff; /* White background */
+        border: 1px solid #ccc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .tender-row {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+
+      strong {
+        font-weight: bold;
+      }
+
+      .search-form {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .search-form input[type="text"] {
+        padding: 10px;
+        width: 60%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .search-form button,
+      .back-button {
+        padding: 10px 20px;
+        background-color: #4caf50; /* Green button background */
+        color: #ffffff; /* White text */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .search-form button:hover,
+      .back-button:hover {
+        background-color: #45a049; /* Darker green on hover */
+      }
+    </style>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Get the search query input field
+        const searchInput = document.getElementById("search-query");
+
+        // Get the "Search for Jamaica" button
+        const searchCountryButtons =
+          document.querySelectorAll(".search-country");
+
+        // Add a click event listener to each country button
+        searchCountryButtons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            // Set the search query to the button's value
+            searchInput.value = button.value;
+
+            // Submit the form
+            document.forms[0].submit();
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Available Tenders</h1>
+
+      <div class="search-form">
+        <form method="GET" action="/search">
+          <input
+            type="text"
+            id="search-query"
+            name="query"
+            placeholder="Enter search keywords"
+          />
+          <button type="submit">Search</button>
+
+          {% if query %}
+          <form method="GET" action="/">
+            <button class="back-button" type="submit">Back</button>
+          </form>
+          <br />
+          {% endif %}
+
+          <p>Filter by Country:</p>
+
+          <!-- Modify the buttons' id attributes to class attributes -->
+          <button type="button" class="search-country" value="Jamaica">
+            Jamaica
+          </button>
+          <button type="button" class="search-country" value="Guyana">
+            Guyana
+          </button>
+          <button type="button" class="search-country" value="Barbados">
+            Barbados
+          </button>
+          <button type="button" class="search-country" value="Antigua">
+            Antigua
+          </button>
+          <button type="button" class="search-country" value="St Kitts">
+            St Kitts
+          </button>
+          <button type="button" class="search-country" value="St Vincent">
+            St Vincent
+          </button>
+          <button type="button" class="search-country" value="St Lucia">
+            St Lucia
+          </button>
+        </form>
+      </div>
+
+      {% if message %}
+      <p>{{ message }}</p>
+      {% else %} {% for index, row in table.iterrows() %}
+      <div class="tender-row">
+        <h2>{{ row['Tender Title'].title() }}</h2>
+        <ul>
+          {% if row['Description'] %}
+          <li><strong>Description:</strong> {{ row['Description'] | safe }}</li>
+          {% endif %} {% for col_name, col_value in row.items() %} {% if
+          col_value and col_name != 'Tender Title' and col_name != 'Description'
+          %}
+          <li>
+            {% if col_name != 'PDF Link' and col_name != 'More Information' %}
+            <strong>{{ col_name }}:</strong>
+            {% endif %} {% if col_name == 'PDF Link' %}
+            <a href="{{ col_value }}">PDF Link</a>
+            {% elif col_name == 'More Information' %}
+            <a href="{{ col_value }}">More Information</a>
+            {% else %} {{ col_value }} {% endif %}
+          </li>
+          {% endif %} {% endfor %}
+        </ul>
+      </div>
+      {% endfor %} {% endif %}
+    </div>
+  </body>
+</html>
